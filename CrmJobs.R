@@ -84,7 +84,17 @@ install.packages("slam")
 library("RColorBrewer")
 library("wordcloud2")
 windowsFonts(myFont=windowsFont("华文彩云"))
-wordcloud2(tableWords,size=10)
+wordcloud2(tableWords,size=1)
 #tableWords[order(tableWords$freq, decreasing = TRUE),]
 tableWords[order(tableWords$freq, decreasing = TRUE),]
-write.csv2(tableWords,file="C:\\jeff\\R\\Practice4R\\Bin\\segWords.csv")  #乱码
+#write.csv2(tableWords,file="C:\\jeff\\R\\Practice4R\\Bin\\segWords.csv")  #乱码
+write.csv(tableWords,file="E:\\Desktop\\R Language\\Practice4R\\Bin\\segWords.csv",sep = ",")  #乱码
+
+
+
+#绘图分析
+library(vcd)
+#
+means<-aggregate(jobs$baseMaxSalary,by=list(jobs$location),FUN=mean)
+barplot(means$x,names.arg = means$Group.1)
+abline(a=20000)
