@@ -141,6 +141,7 @@ ggplot(meanS,aes(x=location,y=avgSalary,fill=location))+geom_bar(stat="identity"
 
 
 
+<<<<<<< HEAD
 
 #薪水和企业类型的关系
 meanS_compType<-aggregate(jobs$baseMaxSalary+jobs$baseMinSalary,by=list(jobs$cType),FUN=mean)
@@ -197,6 +198,52 @@ write.csv2(tableWords,file="C:\\jeff\\R\\Practice4R\\Bin\\segWords.csv")  #乱�
 
 
 =======
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0   12500   16000   16819   20000   83333 
+>>>>>>> c5d2ebf41a9daaa952b18919cfbd8dd0107a00be
+=======
+
+#薪水和企业类型的关系
+meanS_compType<-aggregate(jobs$baseMaxSalary+jobs$baseMinSalary,by=list(jobs$cType),FUN=mean)
+colnames(meanS_compType)<-c("cType","avgSalary")
+ggplot(meanS_compType,aes(x=cType,y=avgSalary,fill=cType))+geom_bar(stat="identity")
+
+
+
+
+#薪水和title的关系?
+
+
+(jobs$baseMaxSalary+jobs$baseMaxSalary)/2
+s_t_matrix<-data.frame(jobs$jobtitle,salary=(jobs$baseMaxSalary+jobs$baseMaxSalary)/2)
+#需要制作一个关键词和薪水对于的表格，并可以知道某个关键词下的薪水分布情况
+s_t_matrix$jobs.jobtitle<-as.vector(s_t_matrix$jobs.jobtitle)
+s_t_matrix$jobtitle_breakdown<-""
+
+
+titleBD<-function(name)
+{
+  
+  s_t_matrix[s_t_matrix$jobs.jobtitle==name,3]<-  segment(name,cutter)
+}
+
+lapply(s_t_matrix$jobs.jobtitle,FUN = titleBD)
+s_t_matrix$titleBreakdown<-segment(s_t_matrix$jobs.jobtitle,cutter)
+
+for(i in 1:nrow(s_t_matrix))
+{
+  s_t_matrix[i,3]<-list(segment(s_t_matrix[i,1],cutter))
+}
+str(s_t_matrix[1,c("jobs.jobtitle")])
+
+
+s_t_matrix[1,3]<-list(segment(s_t_matrix[1,1],cutter))
+
+
+#会“微信”开发的人，一般拿多少薪水
+wechat_Salary<-jobs[str_detect(jobs$jd,"微信"),c("jobtitle","baseMinSalary","baseMaxSalary")]
+summary(wechat_Salary$baseMaxSalary)
+
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #0   12500   16000   16819   20000   83333 
 >>>>>>> c5d2ebf41a9daaa952b18919cfbd8dd0107a00be
