@@ -229,3 +229,328 @@ library("base")
 objs<-mget(ls("package:base"),inherits = TRUE)
 func<-Filter(is.function,objs)
 func
+
+
+#延迟计算
+f1<-function(x)
+{
+  
+  10
+}
+f1(stop("This is an ERROR!"))
+
+f2<-function(x)
+{
+  force(x)
+  10
+}
+f2(stop("This is an ERROR!"))
+
+
+f3<-function(x=ls())
+{
+  a<--1
+  x
+  
+}
+f3()
+f3(ls())
+
+
+#  问题没有重现
+add<-function(x)
+{
+  function(y)x+y
+}
+
+address<-lapply(1:10,add)
+address[[1]](10)
+
+add2<-function(x){
+  force(x)   #强制计算，强制让该变量记录当前的环境，不让其随环境的改变而改变
+  function(y)x+y
+  
+}
+
+address2<-lapply(1:10,add2)
+address2[[1]](10)
+address2[[10]](10)
+
+f1<-function(x={y<-1;2},y=0)
+{
+  x
+  y
+  x+y
+}
+f1()
+
+#中缀函数
+a<-"Jeff"
+b<-"Xiong"
+a+b
+'+'<-function(x,y)paste(x,y,"")
+a+b
+
+
+#替换函数
+install.packages("pryr")
+library("pryr")
+
+x<-1:10
+pryr::address(x)
+x[2]<-100L  #需要加L，才能在当前地址进行修改
+pryr::address(x)
+
+
+
+#变量地址改变了
+x<-1:10
+pryr::address(x)
+'modify<-'<-function(x,position,value)
+{
+  x[position]<-value
+  x
+  
+}
+modify(x,1)<-99
+pryr::address(x)
+x
+
+modify(get("x"),2)<-22
+x
+
+
+
+
+#第七章 面向对象
+requre("pryr"){
+  install.packages("pryr")
+  require("pryr")
+}
+
+###########基本类型###############
+f<-function(){}
+typeof(f)
+
+is.function(f)
+
+typeof(sum)
+
+is.primitive(sum)
+
+
+
+###########S3#############
+names<-c("jeff","lucy","lily","ben","andy")
+is.object(names) & !isS4(names)  #测试对象是不是s3
+pryr::otype(names)
+
+df<-data.frame(x=1:10,y=letters[1:10])
+pryr::otype(df)#?
+pryr::otype(df$x)
+pryr::otype(df$y)
+
+ftype(mean)
+
+
+methods("mean")
+methods(class="ts")
+
+#创建s3对象
+foo<-structure(list(),class="foo")
+foo<-list()
+class(foo)<-"foo"
+otype(foo)
+inherits(foo,"foo") #是否继承
+
+otype(glm)
+
+#构造函数
+foo<-function(x)
+{
+  if(!is.numeric(x))stop("X must be numeric")
+  structure(list(x),class="foo")
+  
+}
+foo(10)
+otype(foo)
+
+
+#类型转换 - 不推荐这么做
+mod<-lm(log(mpg)~log(disp),data=mtcars)
+class(mod)
+print(mod)
+class(mod)<-"data.frame"
+print(mod)
+mod$coefficients
+
+
+f<-function(x)UseMethod("f")  #泛型方法调用,根据类型做具体调用，类似反射解耦编程
+f.a<-function(x) "Class a"
+f.b<-function(x) "Class b"
+a<-structure(list(),class="a")
+b<-structure(list(),class="b")
+class(a)
+f(a)
+f(b)
+
+#为已有的泛型函数添加一个方法
+mean.a<-function(x) "mean method for class a"
+mean(a)
+
+
+#泛型方法的传递，默认处理
+f<-function(x)UseMethod("f")
+f.a<-function(x)"Class a"
+f.default<-function(x)"Unknown class"  ###########
+f(structure(list(),class="a"))
+f(structure(list(),class=c("a","b")))
+f(structure(list(),class="c"))
+
+
+t
+UseMethod(t())
+UseMethod("Math")
+methods("t")
+  
+
+
+
+########s4############
+
+library(stats4)
+
+
+y<-c(26,17,13,12,20,5,9,8,5,4,8)
+nLL<-function(lambda) -sum(stats::dpois(y,lambda,log=TRUE))
+fit<-mle(nLL,start=list(lambda=5),nobs=length(y))
+
+isS4(fit)
+
+otype(fit)
+
+isS4(nobs)
+
+ftype(nobs)
+
+mle_nobs<-method_from_call(nobs(fit))  #取出S4方法
+
+isS4(mle_nobs)
+
+ftype(mle_nobs)
+
+#selectMethod("nobs",list("mle"))
+#method_from_call(nobs(fit)) 
+
+#构造S4对象
+setClass("Person",slots=list(name="character",age="numeric"))
+setClass("Employee",slots=list(boss="Person"),contains="Person")  #contains 继承至哪个类
+
+
+
+#构造泛型S4函数
+output<-function(x,text="defalut")
+{
+  print("root method")
+  
+}
+#setGeneric("Print",function(x){
+#  standardGeneric("Print")
+#  
+#})
+setGeneric("output")  #一定需要，等价于S3的UseMethod
+
+setMethod("output","Person",function(x,text="Person Class") {
+  paste(x@name," ",text)
+  }) #形参要和被覆盖的函数形参保持一致
+
+setMethod("output","Employee",function(x,text="Employee Class") { 
+  print(paste(x@name," ",text))
+  callNextMethod(x)}) #形参要和被覆盖的函数形参保持一致  
+
+
+alice<-new("Person",name="Alice",age=40)
+john<-new("Employee",name="John",age=20,boss=alice)
+
+john@name
+
+slot(alice,"name")  #读取属性
+
+output(alice)
+
+output(john) #调用父方法
+
+#########RC############
+
+Account<-setRefClass("Account",fields = list(balance="numeric"))
+a<-Account$new(balance=100)
+a$balance
+
+a$balance<-200
+a$balance
+
+c<-a$copy()
+c$balance
+
+Account<-setRefClass("Account",fields=list(balance="numeric"),methods=list(
+  withdraw=function(x)
+  {
+    balance<<-balance-x
+  },
+  deposit=function(x){
+    balance<<-balance+x
+  }
+))
+
+Customer<-setRefClass("Customer",fields=list(fullname="character"),methods=list(
+  signature=function(x)
+  {
+     x
+  },
+  deposite=function(x)
+  {
+     callSuper(x*2)#???
+  }
+),contains = "Account")
+a<-Account$new(balance=100)
+a$balance
+a$deposit(1000)
+a$balance
+
+
+c<-Customer$new(fullname="Jeff Xiong")
+c$fullname
+c$balance<-0
+c$deposit(100)
+c$balance
+c$signature(100)
+
+
+
+#第八章 环境
+library(pryr)
+where("mean")
+
+#深度赋值
+f<-0
+fm<-function()
+{
+  f<<-100  #在当前环境的父级甚至更高级别搜寻f变量，并对它进行赋值
+  
+}
+f
+fm()
+f
+
+
+#延迟绑定，真正调用变量时才加载
+
+
+system.time(b %<d-%{Sys.sleep(1);1})
+system.time(b)
+
+#活动绑定，每次调用的时候，都重新进行以此赋值
+tNum %<a-% runif(1)
+tNum
+
+
