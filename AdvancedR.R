@@ -554,3 +554,16 @@ tNum %<a-% runif(1)
 tNum
 
 
+#调试
+browser()
+f<-function(a)g(a)
+g<-function(b)h(b)
+h<-function(c)i(c)
+i<-function(d){d<-d+1;"a"+d}
+
+f(10)
+
+
+
+
+
