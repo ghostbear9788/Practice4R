@@ -18,7 +18,7 @@ str(cList)
 
 
 
-#NA
+#NA, 各种类型的空值
 NA
 NA_character_
 NA_complex_
@@ -27,6 +27,7 @@ NA_real_
 NaN
 
 
+#为向量命名
 x<-setNames(1:3,c("a","b","c"))
 x
 
@@ -36,7 +37,7 @@ attributes(y)
 
 
 f1<-factor(letters)
-levels(f1)<-rev(levels(f1))
+levels(f1)<-rev(levels(f1)) #打印因子标签
 
 f2<-rev(factor(letters))
 f3<-factor(letters,levels=rev(letters))
@@ -65,7 +66,7 @@ df<-data.frame(x=1:3,y=c("a","b","c"),stringsAsFactors = F)
 str(df)
 
 tMatrix=matrix(1:12,ncol=2,nrow=6,2)
-tFrame<-data.frame(tMatrix)
+tFrame<-data.frame(tMatrix)   #矩阵转数据框
 tFrame
 
 
@@ -90,7 +91,7 @@ vals<-outer(1:5,1:5,FUN="paste",sep=",")
 mSelect<-matrix(c(1,1,3,1,2,4),ncol=2,byrow=T)
 vals[mSelect]
 #vals
-#[,1]  [,2]  [,3]  [,4]  [,5] 
+#      [,1]  [,2]  [,3]  [,4]  [,5] 
 #[1,] "1,1" "1,2" "1,3" "1,4" "1,5"
 #[2,] "2,1" "2,2" "2,3" "2,4" "2,5"
 #[3,] "3,1" "3,2" "3,3" "3,4" "3,5"
@@ -189,7 +190,7 @@ subset(df,df$x==1)
 
 
 #
-x1<-1:10%%2==0
+x1<-1:10%%2==0  # %% 取余数操作符
 x1  #FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE
 
 x2<-which(x1)
@@ -243,7 +244,7 @@ f1(stop("This is an ERROR!"))
 
 f2<-function(x)
 {
-  force(x)
+  force(x)  #将当前变量强制放在函数的定义域内
   10
 }
 f2(stop("This is an ERROR!"))
@@ -301,7 +302,7 @@ install.packages("pryr")
 library("pryr")
 
 x<-1:10
-pryr::address(x)
+pryr::address(x)   #用来检测赋值操作是否导致变量被频繁复制
 x[2]<-100L  #需要加L，才能在当前地址进行修改
 pryr::address(x)
 
@@ -319,6 +320,8 @@ pryr::address(x)
 modify(x,1)<-99
 pryr::address(x)
 x
+x[2]<-22
+pryr::address(x)
 
 modify(get("x"),2)<-22
 x
@@ -676,7 +679,9 @@ while(i<3)
 
 
 
-##非标准计算的函数？是哪一类函数？
+##非标准计算的函数？是哪一类函数？ 
+#使用substitutue构建的动态函数，使用了元编程技术，难以预测和调整
+
 
 
 
@@ -706,8 +711,8 @@ tags<-c("p","b","i")
 html<-lapply(setNames(tags,tags),simple_tag)
 
 
-html$p(c("book"))  #返回结果不一样， “...” 具体是什么作用？？？
-html$p(c("book","rules"))
+html$p(c("book"))  #返回结果不一样， “...” 具体是什么作用？？？ ...表示尚未匹配的参数，在这里，它指代传入函数中的“book”以及传c("book","rules")
+html$p(c("book","rules"))  #传向量进去后，函数被调用了两次？这里应该是向量运算，传入的是个向量，所以paste0会分别为向量中的元素调用一次，并最终返回一个向量
 
 list2env(html,environment())  #将函数列表映射到全局环境中，html是列表
 b("nice girl")
@@ -873,7 +878,7 @@ r_add(1:10)
 
 
 ################第十二章 函数运算符########################
-##函数运算符提供包装其他的函数并提供额外功能的作用，类似OOP中的装饰者模式
+##函数运算符提供包装其他的函数并提供额外功能的作用，类似OOP中的装饰者模式，使用函数闭包来实现包装功能
 #常用的函数运算符
 #compact
 #failwith
@@ -997,7 +1002,7 @@ and<-function(f1,f2)
 and(is.character,is.numeric)("1")
 
 
-############第十三章 非标准函数
+############第十三章 非标准函数#################
 
 ###捕获表达式
 substitute()
