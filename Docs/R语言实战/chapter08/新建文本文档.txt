@@ -1,0 +1,125 @@
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Workspace loaded from d:/Program Files/RStudio/.RData]
+
+> runif(5)
+[1] 0.5368802 0.7998083 0.7703610 0.1192516 0.1219746
+> women
+   height weight
+1      58    115
+2      59    117
+3      60    120
+4      61    123
+5      62    126
+6      63    129
+7      64    132
+8      65    135
+9      66    139
+10     67    142
+11     68    146
+12     69    150
+13     70    154
+14     71    159
+15     72    164
+> 
+> fit<-lm(weight~height,women)
+> summary(fit)
+
+Call:
+lm(formula = weight ~ height, data = women)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7333 -1.1333 -0.3833  0.7417  3.1167 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -87.51667    5.93694  -14.74 1.71e-09 ***
+height        3.45000    0.09114   37.85 1.09e-14 ***
+---
+Signif. codes:  0 ¡®***¡¯ 0.001 ¡®**¡¯ 0.01 ¡®*¡¯ 0.05 ¡®.¡¯ 0.1 ¡® ¡¯ 1
+
+Residual standard error: 1.525 on 13 degrees of freedom
+Multiple R-squared:  0.991,	Adjusted R-squared:  0.9903 
+F-statistic:  1433 on 1 and 13 DF,  p-value: 1.091e-14
+
+> women$weight
+ [1] 115 117 120 123 126 129 132 135 139 142 146 150 154 159
+[15] 164
+> women$height
+ [1] 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72
+> residuals(fit)
+          1           2           3           4           5 
+ 2.41666667  0.96666667  0.51666667  0.06666667 -0.38333333 
+          6           7           8           9          10 
+-0.83333333 -1.28333333 -1.73333333 -1.18333333 -1.63333333 
+         11          12          13          14          15 
+-1.08333333 -0.53333333  0.01666667  1.56666667  3.11666667 
+> plot(women$height~women$weight,xlab="Height (in inches)", ylab="Weight (in pounds)")
+> abline(fit)
+> abline(fit)
+> plot(women$height~women$weight,xlab="Height (in inches)", ylab="Weight (in pounds)")
+> abline(fit)
+> abline(fit)
+> lines(fit)
+Error in xy.coords(x, y) : 
+  'x' is a list, but does not have components 'x' and 'y'
+> fitted(fit)
+       1        2        3        4        5        6        7        8        9 
+112.5833 116.0333 119.4833 122.9333 126.3833 129.8333 133.2833 136.7333 140.1833 
+      10       11       12       13       14       15 
+143.6333 147.0833 150.5333 153.9833 157.4333 160.8833 
+> residuals(fit)
+          1           2           3           4           5           6           7 
+ 2.41666667  0.96666667  0.51666667  0.06666667 -0.38333333 -0.83333333 -1.28333333 
+          8           9          10          11          12          13          14 
+-1.73333333 -1.18333333 -1.63333333 -1.08333333 -0.53333333  0.01666667  1.56666667 
+         15 
+ 3.11666667 
+> plot(women$height~women$weight,xlab="Height (in inches)", ylab="Weight (in pounds)")
+> abline(fit)
+> 
+> 
+> 
+> 
+> 
+> 
+> fit2<-lm(weight~height+I(height^2), data=women)
+> summary(fit2)
+
+Call:
+lm(formula = weight ~ height + I(height^2), data = women)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.50941 -0.29611 -0.00941  0.28615  0.59706 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 261.87818   25.19677  10.393 2.36e-07 ***
+height       -7.34832    0.77769  -9.449 6.58e-07 ***
+I(height^2)   0.08306    0.00598  13.891 9.32e-09 ***
+---
+Signif. codes:  0 ¡®***¡¯ 0.001 ¡®**¡¯ 0.01 ¡®*¡¯ 0.05 ¡®.¡¯ 0.1 ¡® ¡¯ 1
+
+Residual standard error: 0.3841 on 12 degrees of freedom
+Multiple R-squared:  0.9995,	Adjusted R-squared:  0.9994 
+F-statistic: 1.139e+04 on 2 and 12 DF,  p-value: < 2.2e-16
+
+> plot(women$height,women$weight,xlab="Height (in inches)",ylab="Weight (in lbs)")
+> lines(women$height,fitted(fit2))
+> 
